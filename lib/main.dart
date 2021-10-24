@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:motorsports_calendar/models/motorsport_event.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
-  final jsonData =
-      '''{"events":[{"name":"Australian Grand Prix","place":"Melbourne, Australia","raceDate":"21 Mar 2022","subEvents":[{"name":"Free Practice 1","time":"12 PM","date":"19 Mar 2022"},{"name":"Free Practice 2","time":"3 PM","date":"19 Mar 2022"},{"name":"Free Practice 3","time":"12 PM","date":"20 Mar 2022"},{"name":"Qualifying","time":"3 PM","date":"20 Mar 2022"},{"name":"Race","time":"3 PM","date":"21 Mar 2022"}]},{"name":"Singapore Grand Prix","place":"Singapore","raceDate":"21 Apr 2022","subEvents":[{"name":"Free Practice 1","time":"12 PM","date":"19 Apr 2022"},{"name":"Free Practice 2","time":"3 PM","date":"19 Apr 2022"},{"name":"Free Practice 3","time":"12 PM","date":"20 Apr 2022"},{"name":"Qualifying","time":"3 PM","date":"20 Apr 2022"},{"name":"Race","time":"3 PM","date":"21 Apr 2022"}]}]}''';
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final f1jsonurl = 'https://jsonkeeper.com/b/QYKE';
+
+  List<MotorsportEvent> f1Data = [];
+
+  getEvents() async {
+    f1Data = await fetchEvent(f1jsonurl);
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    var parsedJson = jsonDecode(jsonData);
-
+    getEvents();
     return MaterialApp(
       title: 'Motorsports Calendar',
       home: Scaffold(
@@ -18,30 +31,40 @@ class MyApp extends StatelessWidget {
           title: const Text('Motorsports Calendar'),
         ),
         body: Center(
-          child: ListView.builder(
-            itemCount: parsedJson['events'].length,
-            itemBuilder: (BuildContext context, int index) {
-              return ExpansionTile(
-                  title: Text(parsedJson['events'][index]['name']),
-                  subtitle: Text(parsedJson['events'][index]['place'] +
-                      ' - ' +
-                      parsedJson['events'][index]['raceDate']),
-                  // children: <Widget>[
-                  //   ListTile(title: Text('This is tile number 1')),
-                  // ],
-                  children: [
-                    for (var subevent in parsedJson['events'][index]
-                        ['subEvents'])
-                      ListTile(
-                        title: Text(subevent['name']),
-                        subtitle:
-                            Text(subevent['date'] + ' - ' + subevent['time']),
-                      )
-                  ]);
-            },
-          ),
+          child: (f1Data.isEmpty)
+              ? const CircularProgressIndicator()
+              : ListView.builder(
+                  itemCount: f1Data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ExpansionTile(
+                        title: Text(f1Data[index].name),
+                        subtitle: Text(f1Data[index].place +
+                            ' - ' +
+                            f1Data[index].raceDate),
+                        children: [
+                          for (var subevent in f1Data[index].subEvents)
+                            ListTile(
+                              title: Text(subevent.name),
+                              subtitle:
+                                  Text(subevent.date + ' - ' + subevent.time),
+                            )
+                        ]);
+                  },
+                ),
         ),
       ),
     );
+  }
+
+  Future<List<MotorsportEvent>> fetchEvent(url) async {
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      Map eventData = jsonDecode(response.body);
+      List<dynamic> events = eventData['events'];
+      return events.map((e) => MotorsportEvent.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load event');
+    }
   }
 }
