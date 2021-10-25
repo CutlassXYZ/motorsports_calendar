@@ -14,6 +14,7 @@ MotorsportEvent _$MotorsportEventFromJson(Map<String, dynamic> json) =>
       subEvents: (json['subEvents'] as List<dynamic>)
           .map((e) => SubEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
+      eventLogo: json['eventLogo'] as String?,
     );
 
 Map<String, dynamic> _$MotorsportEventToJson(MotorsportEvent instance) =>
@@ -21,5 +22,6 @@ Map<String, dynamic> _$MotorsportEventToJson(MotorsportEvent instance) =>
       'name': instance.name,
       'place': instance.place,
       'raceDate': instance.raceDate,
+      'eventLogo': instance.eventLogo,
       'subEvents': instance.subEvents,
     };

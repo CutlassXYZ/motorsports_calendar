@@ -12,18 +12,38 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final f1jsonurl = 'https://jsonkeeper.com/b/QYKE';
+  final allSeriesJson =
+      '{"f1":{"jsonUrl":"https://jsonkeeper.com/b/QYKE","logoName":"f1.png"},"motogp":{"jsonUrl":"https://jsonkeeper.com/b/QYKE","logoName":"motogp.png"}}';
 
-  List<MotorsportEvent> f1Data = [];
+  List<MotorsportEvent> selectedSeriesData = [];
 
-  getEvents() async {
-    f1Data = await fetchEvent(f1jsonurl);
-    setState(() {});
+  getEvents(details) async {
+    List<MotorsportEvent> seriesData = [];
+    seriesData = await fetchEvent(details['jsonUrl']);
+    for (var element in seriesData) {
+      element.eventLogo = details['logoName'];
+      setState(() {
+        selectedSeriesData.add(element);
+      });
+    }
+  }
+
+  getAllSeriesData() {
+    Map<String, dynamic> allSeries = jsonDecode(allSeriesJson);
+
+    allSeries.forEach((key, value) {
+      getEvents(value);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAllSeriesData();
   }
 
   @override
   Widget build(BuildContext context) {
-    getEvents();
     return MaterialApp(
       title: 'Motorsports Calendar',
       home: Scaffold(
@@ -31,18 +51,23 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Motorsports Calendar'),
         ),
         body: Center(
-          child: (f1Data.isEmpty)
+          child: (selectedSeriesData.isEmpty)
               ? const CircularProgressIndicator()
               : ListView.builder(
-                  itemCount: f1Data.length,
+                  itemCount: selectedSeriesData.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ExpansionTile(
-                        title: Text(f1Data[index].name),
-                        subtitle: Text(f1Data[index].place +
+                        leading: Image(
+                          image: AssetImage('assets/images/' +
+                              (selectedSeriesData[index].eventLogo ?? '')),
+                        ),
+                        title: Text(selectedSeriesData[index].name),
+                        subtitle: Text(selectedSeriesData[index].place +
                             ' - ' +
-                            f1Data[index].raceDate),
+                            selectedSeriesData[index].raceDate),
                         children: [
-                          for (var subevent in f1Data[index].subEvents)
+                          for (var subevent
+                              in selectedSeriesData[index].subEvents)
                             ListTile(
                               title: Text(subevent.name),
                               subtitle:
