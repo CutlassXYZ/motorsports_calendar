@@ -7,8 +7,9 @@ part 'motorsport_event.g.dart';
 class MotorsportEvent {
   final String name;
   final String place;
-  final String raceDate;
+  String raceDate;
   String? eventLogo;
+  DateTime? earliestTime;
   final List<SubEvent> subEvents;
 
   MotorsportEvent(
@@ -16,7 +17,8 @@ class MotorsportEvent {
       required this.place,
       required this.raceDate,
       required this.subEvents,
-      this.eventLogo});
+      this.eventLogo,
+      this.earliestTime});
 
   factory MotorsportEvent.fromJson(Map<String, dynamic> json) =>
       _$MotorsportEventFromJson(json);

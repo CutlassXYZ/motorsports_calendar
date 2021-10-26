@@ -15,6 +15,9 @@ MotorsportEvent _$MotorsportEventFromJson(Map<String, dynamic> json) =>
           .map((e) => SubEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
       eventLogo: json['eventLogo'] as String?,
+      earliestTime: json['earliestTime'] == null
+          ? null
+          : DateTime.parse(json['earliestTime'] as String),
     );
 
 Map<String, dynamic> _$MotorsportEventToJson(MotorsportEvent instance) =>
@@ -23,5 +26,6 @@ Map<String, dynamic> _$MotorsportEventToJson(MotorsportEvent instance) =>
       'place': instance.place,
       'raceDate': instance.raceDate,
       'eventLogo': instance.eventLogo,
+      'earliestTime': instance.earliestTime?.toIso8601String(),
       'subEvents': instance.subEvents,
     };
