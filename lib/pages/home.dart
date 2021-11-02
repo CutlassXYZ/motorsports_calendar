@@ -38,9 +38,7 @@ class _HomePageState extends State<HomePage> {
                         maxWidth: 50,
                         maxHeight: 50,
                       ),
-                      child: Image.asset(
-                          'assets/images/' +
-                              (selectedSeriesData[index].eventLogo ?? ''),
+                      child: Image.asset('assets/images/f1.png',
                           fit: BoxFit.cover),
                     ),
                     title: Text(selectedSeriesData[index].name),
@@ -66,8 +64,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  final allSeriesJson =
-      '{"f1":{"jsonUrl":"https://jsonkeeper.com/b/8IRY","logoName":"f1.png"},"motogp":{"jsonUrl":"https://jsonkeeper.com/b/8IRY","logoName":"motogp.png"}}';
+  final allSeriesLogos =
+      '{"f1":{"logoName":"f1.png"},"motogp":{"logoName":"motogp.png"}}';
+
+  final allSeriesJson = '{"1":{"jsonUrl":"https://jsonkeeper.com/b/PPNR"}}';
 
   getEvents(details) async {
     EventService eventService = EventService();

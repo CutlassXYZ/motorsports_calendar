@@ -10,6 +10,7 @@ class MotorsportEvent {
   String raceDate;
   String? eventLogo;
   DateTime? earliestTime;
+  String series;
   final List<SubEvent> subEvents;
 
   MotorsportEvent(
@@ -18,7 +19,8 @@ class MotorsportEvent {
       required this.raceDate,
       required this.subEvents,
       this.eventLogo,
-      this.earliestTime});
+      this.earliestTime,
+      required this.series});
 
   factory MotorsportEvent.fromJson(Map<String, dynamic> json) =>
       _$MotorsportEventFromJson(json);

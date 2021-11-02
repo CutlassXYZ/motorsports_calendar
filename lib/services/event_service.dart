@@ -8,8 +8,18 @@ class EventService {
 
     if (response.statusCode == 200) {
       Map eventData = jsonDecode(response.body);
-      List<dynamic> events = eventData['events'];
-      return events.map((e) => MotorsportEvent.fromJson(e)).toList();
+      List<dynamic> events = [];
+
+      eventData.forEach((key, value) {
+        value['events'].forEach((val) {
+          val['series'] = key;
+          events.add(val);
+        });
+      });
+
+      return events.map((e) {
+        return MotorsportEvent.fromJson(e);
+      }).toList();
     } else {
       throw Exception('Failed to load event');
     }
